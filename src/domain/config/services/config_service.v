@@ -5,16 +5,17 @@ import ken0x0a.dotenv
 pub struct ConfigService {}
 
 fn (_ &ConfigService) get_work_dir() !string {
-	mut babydi_path_files := $env('BABYDI_PATH_FILES')
-	$if dev ? {
+	return $if dev ? {
 		local_env := dotenv.parse('.env.local')
 
-		babydi_path_files = local_env['BABYDI_PATH_FILES'] or {
+		babydi_path_files := local_env['BABYDI_PATH_FILES'] or {
 			return error('Env var BABYDI_PATH_FILES not found')
 		}
-	}
 
-	return babydi_path_files
+		babydi_path_files.trim_space()
+	} $else {
+		$env('BABYDI_PATH_FILES')
+	}
 }
 
 fn (_ &ConfigService) get_backend_babydi() !string {
@@ -28,11 +29,11 @@ fn (_ &ConfigService) get_backend_babydi() !string {
 			return error('Env var BABYDI_BACKEND_PORT not found')
 		}
 
-		'${backend_host}:${backend_port}'
+		'${backend_host.trim_space()}:${backend_port.trim_space()}'
 	} $else {
 		backend_host := $env('BABYDI_BACKEND_HOST')
-		backend_port := $env('BABYDI_BACKEND_PORT').int()
+		backend_port := $env('BABYDI_BACKEND_PORT')
 
-		'${backend_host}:${backend_port}'
+		'${backend_host.trim_space()}:${backend_port.trim_space()}'
 	}
 }

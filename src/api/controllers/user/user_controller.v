@@ -12,15 +12,16 @@ pub:
 
 @['/:user_uuid'; post]
 fn (serv &WSUser) create_user(mut ctx ws_context.Context, user_uuid string) veb.Result {
-	serv.handler_user.create_user(user_uuid) or {
+	serv.handler_user.create(user_uuid) or {
+		ctx.res.set_status(.bad_request)
 		return ctx.json({
-			'message': 'Falha ao cadastrar o usuário'
+			'message': 'Falha ao cadastrar o usuário.'
 			'status':  'error'
 		})
 	}
 
 	return ctx.json({
 		'message': 'Usuário cadastrado'
-		'status':  'error'
+		'status':  'info'
 	})
 }

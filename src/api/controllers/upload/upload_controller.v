@@ -3,11 +3,13 @@ module upload
 import veb
 import api.ws as ws_context
 import domain.upload.interfaces as domain_upload
+import domain.profile.interfaces as domain_profile
 
 pub struct WSUpload {
 	veb.Middleware[ws_context.Context]
 pub:
-	handler_upload domain_upload.IUploadService
+	handler_upload  domain_upload.IUploadService
+	handler_profile domain_profile.IProfileService
 }
 
 @['/:user_uuid/:uuid_profile'; post]
