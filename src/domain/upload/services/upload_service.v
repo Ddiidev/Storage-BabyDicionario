@@ -13,7 +13,7 @@ pub:
 }
 
 fn (serv &UploadService) upload(user_uuid string, uuid_profile string, data string) ! {
-	if serv.api.contain_profile(uuid_profile) {
+	// if serv.api.contain_profile(uuid_profile) {
 		work_dir := serv.conf.get_work_dir() or { return error('Falha interna.') }
 		path_user := os.join_path(work_dir, user_uuid)
 		path_user_profile := os.join_path(path_user, uuid_profile)
@@ -47,9 +47,9 @@ fn (serv &UploadService) upload(user_uuid string, uuid_profile string, data stri
 		processar_imagem(path_image_original, path_image_dest)!
 
 		os.rm(path_image_original) or {}
-	} else {
-		return error('Perfil não encontrada.')
-	}
+	// } else {
+	// 	return error('Perfil não encontrada.')
+	// }
 }
 
 fn processar_imagem(name_file_original string, name_file_dest string) ! {

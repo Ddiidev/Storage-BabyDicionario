@@ -13,7 +13,11 @@ pub:
 @['/:user_uuid/:uuid_profile'; get]
 fn (ws &WSServerImage) get_image_profile(mut ctx ws_context.Context, user_uuid string, uuid_profile string) veb.Result {
 	path_file := ws.handler_server_image.get_image_profile(user_uuid, uuid_profile) or {
-		return ctx.ok(err.msg())
+		ctx.res.set_status(.unprocessable_entity)
+		return ctx.json({
+			'message': err.msg()
+			'status':  'error'
+		})
 	}
 
 	return ctx.file(path_file)

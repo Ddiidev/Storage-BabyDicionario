@@ -12,13 +12,27 @@ pub:
 	handler_profile domain_profile.IProfileService
 }
 
+const error_no_file_reported = {
+	'message': 'Nehum arquivo informado'
+	'status':  'error'
+}
+
 @['/:user_uuid/:uuid_profile'; post]
 pub fn (ws &WSUpload) upload(mut ctx ws_context.Context, user_uuid string, uuid_profile string) veb.Result {
-	files := ctx.files['file'] or { return ctx.ok('Nenhum arquivo informado') }
+	files := ctx.files['file'] or {
+		ctx.res.set_status(.unprocessable_entity)
+		return ctx.json(upload.error_no_file_reported)
+	}
 
-	file := files[0] or { return ctx.ok('error') }
+	file := files[0] or {
+		ctx.res.set_status(.unprocessable_entity)
+		return ctx.json(upload.error_no_file_reported)
+	}
 
-	ws.handler_upload.upload(user_uuid, uuid_profile, file.data) or { return ctx.ok(err.msg()) }
+	ws.handler_upload.upload(user_uuid, uuid_profile, file.data) or {
+		return ctx.server_error(err.msg())
+	}
 
-	return ctx.ok('ok')
+	ctx.res.set_status(.no_content)
+	return ctx.text('')
 }
