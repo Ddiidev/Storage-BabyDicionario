@@ -13,11 +13,13 @@ import domain.server_image.services as domain_service_server_image
 import domain.backend_babydi.services as domain_service_backend_babydi
 
 pub struct Wservice {
+	// veb.Middleware[ws.Context]
 	veb.Controller
 }
 
 fn main() {
 	mut wservice := &Wservice{}
+
 	conf_cors := veb.cors[ws.Context](veb.CorsOptions{
 		origins:         ['*']
 		allowed_methods: [.get, .head, .options, .patch, .put, .post, .delete]
@@ -51,6 +53,8 @@ fn main() {
 	}
 	user_controller.use(conf_cors)
 
+	// wservice.use(veb.encode_gzip[ws.Context]())
+	// wservice.use(conf_cors)
 	wservice.register_controller[upload.WSUpload, ws.Context]('/upload', mut upload_controller)!
 	wservice.register_controller[server_image.WSServerImage, ws.Context]('/server-image', mut
 		server_image_controller)!
