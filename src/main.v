@@ -13,7 +13,6 @@ import domain.server_image.services as domain_service_server_image
 import domain.backend_babydi.services as domain_service_backend_babydi
 
 pub struct Wservice {
-	// veb.Middleware[ws.Context]
 	veb.Controller
 }
 
@@ -22,33 +21,34 @@ fn main() {
 
 	conf_cors := veb.cors[ws.Context](veb.CorsOptions{
 		origins:         ['*']
-		allowed_methods: [.get, .head, .options, .patch, .put, .post, .delete]
+		max_age: 10
+		allowed_methods: [.get, .post, .options, .patch, .put, .delete]
 	})
-	backend_babydi := domain_service_backend_babydi.BackendBabyDiService{}
+	// backend_babydi := domain_service_backend_babydi.BackendBabyDiService{}
 
-	conf := domain_service_config.ConfigService{}
+	// conf := domain_service_config.ConfigService{}
 	mut upload_controller := upload.WSUpload{
 		handler_upload: &domain_service_upload.UploadService{
-			conf: &conf
-			api:  &backend_babydi
+			conf: domain_service_config.ConfigService{}
+			api:  domain_service_backend_babydi.BackendBabyDiService{}
 		}
 		handler_profile: &domain_service_profile.ProfileService{
-			api: &backend_babydi
+			api: domain_service_backend_babydi.BackendBabyDiService{}
 		}
 	}
 	upload_controller.use(conf_cors)
 
 	mut server_image_controller := server_image.WSServerImage{
 		handler_server_image: &domain_service_server_image.ServerImageService{
-			conf: &conf
+			conf: domain_service_config.ConfigService{}
 		}
 	}
 	server_image_controller.use(conf_cors)
 
 	mut user_controller := user.WSUser{
 		handler_user: &domain_service_user.UserService{
-			conf: &conf
-			api:  &backend_babydi
+			conf: domain_service_config.ConfigService{}
+			api:  domain_service_backend_babydi.BackendBabyDiService{}
 		}
 	}
 	user_controller.use(conf_cors)
@@ -60,5 +60,5 @@ fn main() {
 		server_image_controller)!
 	wservice.register_controller[user.WSUser, ws.Context]('/user', mut user_controller)!
 
-	veb.run[Wservice, ws.Context](mut wservice, 3095)
+	veb.run_at[Wservice, ws.Context](mut wservice, port: 3095, timeout_in_seconds: 6000, family: .ip)!
 }
