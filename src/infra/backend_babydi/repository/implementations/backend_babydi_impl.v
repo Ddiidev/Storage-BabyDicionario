@@ -2,8 +2,9 @@ module implementations
 
 import json
 import net.http
-import infra.backend_babydi.contracts.contract_api
+import compress.gzip
 import domain.config.interfaces as conf
+import infra.backend_babydi.contracts.contract_api
 
 pub struct BackendBabyDi {
 pub:
@@ -49,7 +50,9 @@ fn (bk_babydi BackendBabyDi) default_uuid_profile_from_user(user_uuid string) ?s
 	res := http.get(endpoint) or { return none }
 
 	if res.status_code == 200 {
-		result := json.decode(contract_api.ContractApi[string], res.body) or { return none }
+		body_gzip := gzip.decompress(res.body.bytes()) or { return none }
+
+		result := json.decode(contract_api.ContractApi[string], body_gzip.bytestr()) or { return none }
 		
 		return result.content
 	}

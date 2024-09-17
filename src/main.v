@@ -53,8 +53,14 @@ fn main() {
 	}
 	user_controller.use(conf_cors)
 
-	// wservice.use(veb.encode_gzip[ws.Context]())
-	// wservice.use(conf_cors)
+		
+	/**
+	 * Middlewares para compressão de dados
+	 */
+	user_controller.use(veb.encode_gzip[ws.Context]())
+	upload_controller.use(veb.encode_gzip[ws.Context]())
+	server_image_controller.use(veb.encode_gzip[ws.Context]())
+
 	wservice.register_controller[upload.WSUpload, ws.Context]('/upload', mut upload_controller)!
 	wservice.register_controller[server_image.WSServerImage, ws.Context]('/server-image', mut
 		server_image_controller)!
