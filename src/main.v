@@ -5,11 +5,13 @@ import api.ws
 import api.controllers.user
 import api.controllers.upload
 import api.controllers.server_image
+import api.controllers.server_audio
 import domain.user.services as domain_service_user
 import domain.upload.services as domain_service_upload
 import domain.config.services as domain_service_config
 import domain.profile.services as domain_service_profile
 import domain.server_image.services as domain_service_server_image
+import domain.server_audio.services as domain_service_server_audio
 import domain.backend_babydi.services as domain_service_backend_babydi
 
 pub struct Wservice {
@@ -38,6 +40,13 @@ fn main() {
 	}
 	upload_controller.use(conf_cors)
 
+	mut server_audio_controller := server_audio.WSServerAudio{
+		handler_server_audio: &domain_service_server_audio.ServerAudioService{
+			conf: domain_service_config.ConfigService{}
+		}
+	}
+	server_audio_controller.use(conf_cors)
+
 	mut server_image_controller := server_image.WSServerImage{
 		handler_server_image: &domain_service_server_image.ServerImageService{
 			conf: domain_service_config.ConfigService{}
@@ -64,6 +73,8 @@ fn main() {
 	wservice.register_controller[upload.WSUpload, ws.Context]('/upload', mut upload_controller)!
 	wservice.register_controller[server_image.WSServerImage, ws.Context]('/server-image', mut
 		server_image_controller)!
+	wservice.register_controller[server_audio.WSServerAudio, ws.Context]('/server-audio', mut
+		server_audio_controller)!
 	wservice.register_controller[user.WSUser, ws.Context]('/user', mut user_controller)!
 
 	veb.run_at[Wservice, ws.Context](mut wservice, port: 3095, timeout_in_seconds: 6000, family: .ip)!

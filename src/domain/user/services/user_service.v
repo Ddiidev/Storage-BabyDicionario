@@ -23,3 +23,13 @@ fn (serv &UserService) create(user_uuid string) ! {
 	// 	return error('Usuário inválido ou falha interna. Por favor, tente novamente ou reporte o problema.')
 	// }
 }
+
+fn (serv &UserService) delete(user_uuid string, profile_uuid string) ! {
+	work_dir := serv.conf.get_work_dir() or { return error('Falha interna.') }
+
+	if os.exists(os.join_path(work_dir, user_uuid, profile_uuid)) {
+		os.rmdir_all(os.join_path(work_dir, user_uuid, profile_uuid)) or {
+			return error('Falha ao deletar o perfil do usuário.')
+		}
+	}
+}
