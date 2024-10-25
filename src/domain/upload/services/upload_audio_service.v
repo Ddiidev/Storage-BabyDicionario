@@ -14,7 +14,7 @@ fn (serv &UploadService) upload_audio(user_uuid string, uuid_profile string, key
 	}
 
 	if !os.exists(path_user_profile) {
-		os.mkdir(path_user_profile) or { return error('Erro ao criar pasta do perfil.') }
+		os.mkdir(path_user_profile) or { return error('Erro ao criar espaço do perfil.') }
 	}
 
 	os.write_file(path_audio_dest, data) or { return error('Erro ao salvar áudio') }

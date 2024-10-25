@@ -15,6 +15,6 @@ fn (serv &ServerAudioService) get_audio_profile(user_uuid string, uuid_profile s
 	if !os.exists(os.join_path(work_dir, user_uuid)) {
 		return error('Usuário não encontrado.')
 	}
-		
+
 	return os.join_path(work_dir, user_uuid, uuid_profile, '${key_word}.mp3')
 }
